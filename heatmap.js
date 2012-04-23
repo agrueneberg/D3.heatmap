@@ -6,11 +6,6 @@
  // Draws a heatmap.
  // @param {object} data
  // @param {object} options
- // @param {object} options.padding
- // @param {number} options.padding.top
- // @param {number} options.padding.right
- // @param {number} options.padding.bottom
- // @param {number} options.padding.left
  // @param {DOMElement} options.parentElement Parent element of the SVG element.
  // @param {number} options.width Width of the SVG element.
  // @param {number} options.height Height of the SVG element.
