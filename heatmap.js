@@ -11,14 +11,16 @@
  // @param {number} options.padding.right
  // @param {number} options.padding.bottom
  // @param {number} options.padding.left
+ // @param {DOMElement} options.parentElement Parent element of the SVG element.
  // @param {number} options.width Width of the SVG element.
  // @param {number} options.height Height of the SVG element.
     exports.heatmap = function (data, options) {
 
-        var width, height, colorScale, numRects, rectWidth, rectHeight, svg;
+        var parentElement, width, height, colorScale, numRects, rectWidth, rectHeight, svg;
 
      // Evaluate options and set defaults.
         options = options || {};
+        parentElement = options.parentElement || document.body;
         width = options.width || 300;
         height = options.height || 300;
 
@@ -33,7 +35,7 @@
         rectHeight = height / numRects;
 
      // Set up the SVG element.
-        svg = d3.select("body")
+        svg = d3.select(parentElement)
                 .append("svg:svg")
                 .attr("width", width)
                 .attr("height", height);
