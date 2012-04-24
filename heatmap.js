@@ -21,8 +21,8 @@
 
      // Create padded scale for the x axis.
         colorScale = d3.scale.linear()
-                       .domain([0, 1])
-                       .range(["green", "red"]);
+                       .domain([-1, 0, 1])
+                       .range(["green", "black", "red"]);
 
      // Capture the basics.
         numRects = Object.keys(data).length;
