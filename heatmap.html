@@ -8,9 +8,9 @@
  // Wait until the browser has created a body element for us.
     document.addEventListener("DOMContentLoaded", function () {
 
-        var rppa;
+        var data, viz;
 
-        rppa = {
+        data = {
             "14-3-3_epsilon-M-C": {
                 "14-3-3_epsilon-M-C": 1.0000000000000004,
                 "4E-BP1-R-V": -0.3579213649158245,
@@ -29596,11 +29596,13 @@
             }
         };
 
-     // Draw heatmap.
-        heatmap(rppa, {
-            width: 1000,
-            height: 1000
-        });
+     // Initialize heatmap.
+        viz = heatmap().width(1000).height(1000);
+
+     // Generate heatmap.
+        d3.select("body")
+          .datum(data)
+          .call(viz);
 
     });
 

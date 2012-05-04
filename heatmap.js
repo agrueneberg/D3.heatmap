@@ -1,31 +1,28 @@
 (function (exports) {
     "use strict";
 
+    /*jshint curly:false */
     /*global d3 */
 
- // Draws a heatmap.
- // @param {object} data
- // @param {object} options
- // @param {DOMElement} options.parentElement Parent element of the SVG element.
- // @param {number} options.width Width of the SVG element.
- // @param {number} options.height Height of the SVG element.
-    exports.heatmap = function (data, options) {
+    exports.heatmap = function () {
 
-        var parentElement, width, height, tooltip, colorScale, numRects, rectWidth, rectHeight, svg;
+        var heatmap, width, height, xScale, yScale, colorScale, tooltip;
 
-     // Evaluate options and set defaults.
-        options = options || {};
-        parentElement = options.parentElement || document.body;
-        width = options.width || 300;
-        height = options.height || 300;
-        tooltip = options.tooltip || (function () {
+        width = 300;
+        height = 300;
+
+        xScale = d3.scale.ordinal();
+        yScale = d3.scale.ordinal();
+        colorScale = d3.scale.linear();
+
+        tooltip = (function () {
             var body, tooltip;
             body = d3.select("body");
             tooltip = body.append("div")
                           .style("display", "none")
                           .style("position", "absolute")
                           .style("padding", "5px")
-                          .style("background-color", "rgba(242, 242, 242, .6)");
+                          .style("background-color", "rgba(242, 242, 242, .6)")
             return {
                 show: function (d) {
                     var mouse;
@@ -41,52 +38,96 @@
             };
         }());
 
-     // Create padded scale for the x axis.
-        colorScale = d3.scale.linear()
-                       .domain([-1, 0, 1])
-                       .range(["green", "black", "red"]);
+        heatmap = function (selection) {
 
-     // Capture the basics.
-        numRects = Object.keys(data).length;
-        rectWidth = width / numRects;
-        rectHeight = height / numRects;
+            selection.each(function (data) {
 
-     // Set up the SVG element.
-        svg = d3.select(parentElement)
-                .append("svg:svg")
-                .attr("width", width)
-                .attr("height", height);
+                var labels, values, svg;
 
-     // Prepare data.
-        Object.keys(data).forEach(function (rowLabel, rowIndex) {
-            var columnLabels, row;
-            columnLabels = Object.keys(data[rowLabel]);
-            row = [];
-            columnLabels.forEach(function (columnLabel) {
-                row.push(data[rowLabel][columnLabel]);
-            });
-         // Generate and append rectangles.
-            svg.append("svg:g")
-               .selectAll("rect")
-               .data(row)
-               .enter()
-               .append("rect")
-               .attr("x", function (d, columnIndex) {
-                   return columnIndex * rectWidth;
-                })
-               .attr("y", function () {
-                   return rowIndex * rectWidth;
-                })
-               .attr("width", rectWidth)
-               .attr("height", rectHeight)
-               .attr("fill", colorScale)
-               .on("mousemove", function (d, i) {
-                   tooltip.show(rowLabel + " and " + columnLabels[i] + ":<br>" + d);
-                })
-               .on("mouseout", function (d) {
-                   tooltip.hide();
+             // Extract labels.
+                labels = d3.keys(data);
+
+             // Transform data.
+                values = [];
+                labels.map(function (rowLabel) {
+                    labels.map(function (columnLabel) {
+                        values.push([rowLabel, columnLabel, data[rowLabel][columnLabel]]);
+                    });
                 });
-        });
+
+                xScale.domain(labels)
+                      .rangeBands([0, width]);
+
+                yScale.domain(labels)
+                      .rangeBands([0, height]);
+
+                colorScale.domain([-1, 0, 1])
+                          .range(["green", "black", "red"]);
+
+             // Select existing SVG elements.
+                svg = d3.select(this)
+                        .selectAll("svg")
+                        .data([data]) // Trick to create only one svg element for each data set.
+
+             // Create non-existing SVG elements.
+                svg.enter()
+                   .append("svg");
+
+             // Update both existing and newly created SVG elements.
+                svg.attr("width", width)
+                   .attr("height", height);
+
+             // Generate rectangles.
+                svg.append("g")
+                   .selectAll("rect")
+                   .data(values)
+                   .enter()
+                   .append("rect")
+                   .attr("x", function (d) {
+                       return xScale(d[0]);
+                    })
+                   .attr("y", function (d) {
+                       return yScale(d[1]);
+                    })
+                   .attr("width", function (d) {
+                       return xScale.rangeBand();
+                    })
+                   .attr("height", function (d) {
+                       return yScale.rangeBand();
+                    })
+                   .attr("fill", function (d) {
+                       return colorScale(d[2]);
+                    })
+                   .on("mousemove", function (d) {
+                       tooltip.show(d[0] + " and " + d[1] + ":<br>" + d[2]);
+                    })
+                   .on("mouseout", function (d) {
+                       tooltip.hide();
+                    });
+
+            });
+
+        };
+
+        heatmap.height = function (_) {
+            if (!arguments.length) return height;
+            height = _;
+            return heatmap;
+        };
+
+        heatmap.width = function (_) {
+            if (!arguments.length) return width;
+            width = _;
+            return heatmap;
+        };
+
+        heatmap.tooltip = function (_) {
+            if (!arguments.length) return tooltip;
+            tooltip = _;
+            return heatmap;
+        };
+
+        return heatmap;
 
     };
 
