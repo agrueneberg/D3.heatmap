@@ -111,6 +111,9 @@
                            tooltip.hide();
                         });
 
+                squares.exit()
+                       .remove();
+
             });
 
         };
