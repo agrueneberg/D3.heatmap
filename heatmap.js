@@ -42,7 +42,7 @@
 
             selection.each(function (data) {
 
-                var labels, values, svg;
+                var labels, values, svg, squares;
 
              // Extract labels.
                 labels = d3.keys(data);
@@ -55,55 +55,61 @@
                     });
                 });
 
+             // Update x scale.
                 xScale.domain(labels)
                       .rangeBands([0, width]);
 
+             // Update y scale.
                 yScale.domain(labels)
                       .rangeBands([0, height]);
 
+             // Update color scale.
                 colorScale.domain([-1, 0, 1])
                           .range(["green", "black", "red"]);
 
-             // Select existing SVG elements.
+             // Generate canvas.
                 svg = d3.select(this)
                         .selectAll("svg")
-                        .data([data]) // Trick to create only one svg element for each data set.
+                        .data([data]);
 
-             // Create non-existing SVG elements.
+             // Generate chart template.
                 svg.enter()
-                   .append("svg");
+                   .append("svg")
+                   .append("g");
 
-             // Update both existing and newly created SVG elements.
+             // Update dimensions.
                 svg.attr("width", width)
                    .attr("height", height);
 
-             // Generate rectangles.
-                svg.append("g")
-                   .selectAll("rect")
-                   .data(values)
-                   .enter()
-                   .append("rect")
-                   .attr("x", function (d) {
-                       return xScale(d[0]);
-                    })
-                   .attr("y", function (d) {
-                       return yScale(d[1]);
-                    })
-                   .attr("width", function (d) {
-                       return xScale.rangeBand();
-                    })
-                   .attr("height", function (d) {
-                       return yScale.rangeBand();
-                    })
-                   .attr("fill", function (d) {
-                       return colorScale(d[2]);
-                    })
-                   .on("mousemove", function (d) {
-                       tooltip.show(d[0] + " and " + d[1] + ":<br>" + d[2]);
-                    })
-                   .on("mouseout", function (d) {
-                       tooltip.hide();
-                    });
+             // Generate squares.
+                squares = svg.select("g")
+                             .selectAll("rect")
+                             .data(values);
+
+                squares.enter()
+                       .append("rect");
+
+                squares.attr("x", function (d) {
+                           return xScale(d[0]);
+                        })
+                       .attr("y", function (d) {
+                           return yScale(d[1]);
+                        })
+                       .attr("width", function (d) {
+                           return xScale.rangeBand();
+                        })
+                       .attr("height", function (d) {
+                           return yScale.rangeBand();
+                        })
+                       .attr("fill", function (d) {
+                           return colorScale(d[2]);
+                        })
+                       .on("mousemove", function (d) {
+                           tooltip.show(d[0] + " and " + d[1] + ":<br>" + d[2]);
+                        })
+                       .on("mouseout", function (d) {
+                           tooltip.hide();
+                        });
 
             });
 
