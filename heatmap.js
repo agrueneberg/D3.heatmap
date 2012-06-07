@@ -84,7 +84,9 @@
              // Generate squares.
                 squares = svg.select("g")
                              .selectAll("rect")
-                             .data(values);
+                             .data(values, function (d) {
+                                 return [d[0], d[1]];
+                              });
 
                 squares.enter()
                        .append("rect");
