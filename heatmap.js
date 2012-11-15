@@ -60,8 +60,8 @@
                     });
                     this.addEventListener("mousemove", function (e) {
                         var x, y;
-                        x = Math.floor((e.pageX - this.offsetLeft) / xScale.rangeBand());
-                        y = Math.floor((e.pageY - this.offsetTop) / yScale.rangeBand());
+                        x = Math.floor(e.offsetX / xScale.rangeBand());
+                        y = Math.floor(e.offsetY / yScale.rangeBand());
                         this.title = labels[x] + " and " + labels[y];
                     });
                 });
