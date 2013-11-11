@@ -52,10 +52,10 @@
                 canvas.each(function (d) {
                     var ctx;
                     ctx = this.getContext("2d");
-                    labels.forEach(function (l1, xi) {
-                        labels.forEach(function (l2, yi) {
+                    labels.forEach(function (l1) {
+                        labels.forEach(function (l2) {
                             ctx.fillStyle = colorScale(data[l1][l2]);
-                            ctx.fillRect (xScale(xi), yScale(yi), xScale.rangeBand(), yScale.rangeBand());
+                            ctx.fillRect(xScale(l1), yScale(l2), xScale.rangeBand(), yScale.rangeBand());
                         });
                     });
                     this.addEventListener("mousemove", function (e) {
